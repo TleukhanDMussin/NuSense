@@ -15,14 +15,13 @@ def apply_sobel_with_bilateral_filter_to_image(input_image_path, output_image_pa
     # Convert to grayscale
     gray = cv2.cvtColor(roi_image, cv2.COLOR_BGR2GRAY)
     
-    # Apply Bilateral Filter to reduce noise while keeping edges sharp
+    # Apply Bilateral Filter
     bilateral_filtered = cv2.bilateralFilter(gray, 20, 65, 75)
     
     # Apply Sobel filter
     sobelx = cv2.Sobel(bilateral_filtered, cv2.CV_64F, 1, 0, ksize=3)
     sobely = cv2.Sobel(bilateral_filtered, cv2.CV_64F, 0, 1, ksize=3)
-    
-    # Convert back to uint8
+
     abs_sobelx = cv2.convertScaleAbs(sobelx)
     abs_sobely = cv2.convertScaleAbs(sobely)
     
@@ -32,7 +31,7 @@ def apply_sobel_with_bilateral_filter_to_image(input_image_path, output_image_pa
     # Threshold the Sobel result to get binary image
     _, binary = cv2.threshold(sobel_combined, 19, 255, cv2.THRESH_BINARY)
     
-    # Apply dilation followed by erosion (closing)
+    # Apply dilation followed by erosion
     kernel_dilation = np.ones((3, 3), np.uint8)
     kernel_erosion = np.ones((3, 3), np.uint8)
     dilated = cv2.dilate(binary, kernel_dilation, iterations=1)
@@ -43,20 +42,18 @@ def apply_sobel_with_bilateral_filter_to_image(input_image_path, output_image_pa
     
     quadrilaterals = []
     
-    # Draw contours that are quadrilaterals
     for contour in contours:
         # Approximate the contour to a polygon
         epsilon = 0.08 * cv2.arcLength(contour, True)
         approx = cv2.approxPolyDP(contour, epsilon, True)
         
-        # If the approximated contour has 4 points, it is a quadrilateral
         if len(approx) == 4:
             area = cv2.contourArea(contour)
             hull = cv2.convexHull(contour)
             hull_area = cv2.contourArea(hull)
             solidity = float(area) / hull_area if hull_area > 0 else 0
             
-            # Filter out too small or too large areas and check solidity
+            # Filter out too small or too large areas
             if 2000 < area < 100000 and solidity > 0.2:
                 cv2.drawContours(roi_image, [approx], 0, (0, 255, 0), 2)
                 quadrilaterals.append(approx)
@@ -94,10 +91,9 @@ def apply_sobel_with_bilateral_filter_to_image(input_image_path, output_image_pa
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# Example usage
 input_image_path = r'D:/Experiments/2/Photos_Defisheyed/x1_z2.jpg'
 output_image_path = r'D:/Experiments/2/Photos_Output/x1_z2.jpg'
 #roi_x, roi_y, roi_w, roi_h = 480, 260, 1145, 800
 roi_x, roi_y, roi_w, roi_h = 390, 203, 1335, 1000
-distance_threshold = 50  # Example threshold value
+distance_threshold = 50 
 apply_sobel_with_bilateral_filter_to_image(input_image_path, output_image_path, roi_x, roi_y, roi_w, roi_h, distance_threshold=distance_threshold)
