@@ -44,11 +44,11 @@ class NUSense:
         """ Preprocessing via filtering
         input:
             - img (CV2 format): input image
-            - roi_x (int): ... TODO
-            - roi_y (int): ... TODO
-            - roi_w (int): ... TODO
-            - roi_h (int): ... TODO
-            - distance_threshold (int, default=50): ... TODO
+            - roi_x (int): 400
+            - roi_y (int): 203
+            - roi_w (int): 1290
+            - roi_h (int): 990
+            - distance_threshold (int, default=50):50
         output:
             - img_roi (CV2 format): filtered image
         """
